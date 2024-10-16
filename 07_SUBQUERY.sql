@@ -529,7 +529,7 @@ LEFT JOIN DEPARTMENT ON (DEPT_CODE = DEPT_ID)
 SELECT MIN(HIRE_DATE) --날짜가 가장 이른순
 FROM EMPLOYEE
 WHERE DEPT_CODE = 'D8' --부서별
-AND ENT_YN = 'N';-------------------------
+--AND ENT_YN = 'N';
 
 --상관쿼리 (이태림이 D8부서에서 가장 빠른입사&퇴사자 여서 걸러짐 - D8부서 아예 조회안됨)
 SELECT EMP_ID, EMP_NAME, DEPT_CODE, NVL(DEPT_TITLE,'소속없음'), JOB_NAME, HIRE_DATE
@@ -579,13 +579,13 @@ FROM EMPLOYEE
 WHERE JOB_CODE = 'J2';
 --단일행 단일열 -> SELECT절에 쓰면 스칼라 서브쿼리
 
-( 스칼라 + 상관쿼리 )
+--( 스칼라 + 상관쿼리 )
 SELECT EMP_NAME, JOB_CODE, SALARY, 
 		(SELECT CEIL(AVG(SALARY))
 		FROM EMPLOYEE SUB
 		WHERE SUB.JOB_CODE = MAIN.JOB_CODE) 평균 --소괄호 안에 서브쿼리 넣기
 FROM EMPLOYEE MAIN
-ORDER BY JOB_CODE;------------------
+ORDER BY JOB_CODE;
 
 --모든 사원의 사번, 이름, 관리자사번, 관리자명을 조회
 --단, 관리자가 없는 경우 '없음'으로 표시
@@ -594,9 +594,9 @@ ORDER BY JOB_CODE;------------------
 SELECT EMP_ID, EMP_NAME, MANAGER_ID,
 		NVL((SELECT EMP_NAME --없음은 NVL 쓰면됨
 			FROM EMPLOYEE SUB
-			WHERE SUB.EMP_ID = MAIN.MANAGER_ID)
-			'없음') 관리자명 --관리자명이 서브쿼리로 들어와야함
-FROM EMPLOYEE MAIN;--------------------------
+			WHERE SUB.EMP_ID = MAIN.MANAGER_ID
+			), '없음') 관리자명 --관리자명이 서브쿼리로 들어와야함
+FROM EMPLOYEE MAIN;
 
 -------------------------------------------------
 --7.인라인 뷰(INLINE-VIEW)
@@ -744,10 +744,10 @@ WHERE (DEPT_CODE, JOB_CODE) = (SELECT DEPT_CODE, JOB_CODE
 --단일행 다중열 서브쿼리
 SELECT EMP_ID, EMP_NAME, DEPT_CODE, MANAGER_ID, EMP_NO, HIRE_DATE
 FROM EMPLOYEE
-WHERE (DEPT_CODE, MANAGER_ID) = SELECT (DEPT_CODE, MANAGER_ID
+WHERE (DEPT_CODE, MANAGER_ID) = (SELECT DEPT_CODE, MANAGER_ID
 									FROM EMPLOYEE
-									WHERE SUBSTR (ENP_NO, 1, 2) = '77'
-									AND SUBSTR (EMP_NO, 8, 1) = '2');---------------
+									WHERE SUBSTR (EMP_NO, 1, 2) = '77'
+									AND SUBSTR (EMP_NO, 8, 1) = '2');
 
 -- 6. 부서별 입사일이 가장 빠른 사원의
 -- 사번, 이름, 부서명(NULL이면 '소속없음'), 직급명, 입사일을 조회하고
@@ -846,6 +846,3 @@ FROM EMPLOYEE; --FLOOR은 반올림
 --보너스를 안받는 애들도 SALARY
 SELECT TO_CHAR(SALARY * (1 + NVL(BONUS, 0)) * 12, 'L999,999,999') "보너스 포함 연봉"
 FROM EMPLOYEE;
-
-SELECT DEPARTMENT_NAME, CATEGORY "학과명", "계열"
-FROM WORKBOOK;
